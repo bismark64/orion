@@ -1,5 +1,6 @@
 require 'find'
 require 'orion/result'
+# require 'boyer_moore/boyer_moore'
 include Orion::Result
 
 module Orion
