@@ -34,11 +34,19 @@ If Orion can't find the requested files the above hash will look like:
 
 2. Deleting files
 
+There are two ways to delete files with Orion, the first is a command like call:
+
     Orion.delete "path/where/you/want/to/search/in", "query"
 
-The delete method behind the scenes uses the search method to find the files, and if so it deletes all of them.
+This returns true whether Orion could delete the files and nil if not.
 
-It also returns the same hash than search method:
+The second way adds a block to the delete call:
+
+    Orion.delete "path/where/you/want/to/search/in", "query" do |response|
+      puts response[:files] if response[:success]
+    end
+
+The response hash is the same than search method:
 
     {success: boolean, count: number_of_files_deleted, files: array_with_string_paths_representing_deleted_files}
     
