@@ -18,10 +18,10 @@ module Orion
           result_nil[:files].should be_nil
         end
 
-        it "should return a hash with nil values if the array is empty" do
+        it "should return a hash with empty values if the array is empty" do
           result_empty[:success].should be_false
-          result_empty[:count].should be_nil
-          result_empty[:files].should be_nil
+          result_empty[:count].should be_zero
+          result_empty[:files].should be_empty
         end
 
         it "should return a util hash if the array is not empty or nil" do

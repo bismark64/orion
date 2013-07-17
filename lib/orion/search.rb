@@ -12,6 +12,10 @@ module Orion
     end
 
     def search(query)
+      find(query)
+    end
+
+    def with_response(query)
       result(find(query))
     end
 

@@ -3,24 +3,54 @@ require "spec_helper"
 module Orion
   module RSpec
     describe Delete do
-      describe "#delete_files" do
-        let(:deleted) { Orion::Delete.send(:delete_files, found_files(".txt")) }
+      let(:just_delete) { Orion::Delete.send(:just_delete, found_files(".txt")) }
+      let(:delete_files) { Orion::Delete.send(:delete_files, found_files(".txt")) }
 
-        # The files array comes from the Orion::Search class
-        it_should_behave_like "any normal finder"
-
+      shared_examples_for "a normal deleter" do
         it "should return nil if the files array is empty" do
-          deleted = Orion::Delete.send(:delete_files, found_files("87asd8as89das35d4as7a?4sd.rb"))
+          deleted = Orion::Delete.send(method, found_files(rare_query))
           deleted.should be_nil
+        end
+      end
+
+      describe "#just_delete" do
+        # The files array comes from the Orion::Search class
+        it_should_behave_like "any normal finder" do
+          let(:search_method) { invalid_search.send(:find, ".rb") }
+        end
+
+        it_should_behave_like "a normal deleter" do
+          let(:method) { :just_delete }
+        end
+
+        it "should return true if could delete the files" do
+          create_files(".txt")
+          just_delete.should be_true
+        end
+
+        it "should delete the files it found" do
+          create_files(".txt")
+          just_delete
+          found_files(".txt").should be_empty
+        end
+      end
+
+      describe "#delete_files"  do
+        it_should_behave_like "any normal finder" do
+          let(:search_method) { invalid_search.send(:find, ".rb") }
+        end
+
+        it_should_behave_like "a normal deleter" do
+          let(:method) { :delete_files }
         end
 
         it "should return an array if the files are found" do
-          create_files
-          deleted.should be_instance_of Array
+          create_files(".txt")
+          delete_files.should be_instance_of Array
         end
 
         it "should return an array with the deleted files" do
-          create_files
+          create_files(".txt")
           deleted = Orion::Delete.send(:delete_files, found_files("remove"))
           deleted.each do |deleted_file|
             deleted_file.should be_instance_of String
@@ -28,6 +58,7 @@ module Orion
           end
         end
       end
+
     end
   end
 end

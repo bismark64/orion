@@ -8,15 +8,20 @@ module Orion
       end
 
       describe "#find" do
-        it_should_behave_like "any normal finder"
+        it_should_behave_like "any normal finder" do
+          let(:search_method) { invalid_search.send(:find, ".rb") }
+        end
 
         it "should return an array" do
           found_files.should be_instance_of Array
         end
 
         it "should return an empty array if doesn't find files" do
-          found_files = search.send(:find, "87asd8as89das35d4as7a?4sd.rb")
-          found_files.should be_empty
+          found_files("87asd8as89das35d4as7a?4sd.rb").should be_empty
+        end        
+
+        it "should not return nil if doesn't find files" do
+          found_files("87asd8as89das35d4as7a?4sd.rb").should_not be_nil
         end
 
         it "should return a non empty array if it finds files" do
