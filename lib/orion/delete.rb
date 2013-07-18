@@ -1,5 +1,4 @@
-require 'orion/result'
-include Orion::Result
+require "orion/orion_objects/array"
 
 module Orion
   module Delete
@@ -8,7 +7,7 @@ module Orion
     end
 
     def self.with_response(files)
-      result(delete_files(files))
+      delete_files(files).to_orion
     end
 
     private
