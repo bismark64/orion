@@ -16,43 +16,62 @@ Or install it yourself as:
 
     $ gem install orion
 
+Don't forget to require it in your project:
+    
+    require 'orion'
+
 ## Usage
 
-For the time being Orion allows you to run just two methods:
+For the time being Orion allows you to run just three methods:
 
 1. Searching files:
 
     Orion.search "path/where/you/want/to/search/in", "query"
 
-The result of that request has the following form:
-
-    {success: boolean, count: number_of_files_found, files: array_with_string_paths_representing_found_files}
+The result of that request is an OpenStruct object:
+    
+    #<OpenStruct success= boolean, count=number_of_files_found, files= array_with_string_paths_representing_found_files> 
 
 If Orion can't find the requested files the above hash will look like:
-
-    {success: false, count: nil, files: nil}
+    
+    #<OpenStruct success=false, count=0, files=[]> 
 
 2. Deleting files
-
-There are two ways to delete files with Orion, the first is a command like call:
 
     Orion.delete "path/where/you/want/to/search/in", "query"
 
 This returns true whether Orion could delete the files and nil if not.
 
-The second way adds a block to the delete call:
+3. Getting info from file
+    
+    Orion.get_info("path/where/you/want/to/search/in", *methods)
 
-    Orion.delete "path/where/you/want/to/search/in", "query" do |response|
-      puts response[:files] if response[:success]
+You can call get_info with this File methods:
+
+    :atime, :ctime, :mtime, :ftype, :size
+
+So a get_info example would be:
+
+    Orion.get_info("path/where/you/want/to/search/text.txt", :atime)
+    => #<OpenStruct atime=2013-07-17 19:05:08 -0300>
+
+With more than just one method:
+
+    Orion.get_info("path/where/you/want/to/search/text.txt", :ctime, :size, :ftype)
+    => #<OpenStruct ctime=2013-06-25 13:58:57 -0300, ftype="file", size=204>
+
+Optionally you can provide a block for an alternative sintax in all Orion methods, for example:
+
+    Orion.delete "path/where/you/want/to/search/in", ".rb" do |response|
+      puts response.files if response.success
     end
 
-The response hash is the same than search method:
-
-    {success: boolean, count: number_of_files_deleted, files: array_with_string_paths_representing_deleted_files}
-    
-If Orion can't find the requested files the above hash will look like:
-
-    {success: false, count: nil, files: nil}    
+    Orion.get_info("path/where/you/want/to/search/text.txt", :ctime, :size, :ftype) do |info|
+      if info.ftype == "file"
+        puts info.ctime
+        puts info.size
+      end
+    end
 
 ## Contributing
 
