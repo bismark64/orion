@@ -102,6 +102,9 @@ With more than just one method:
 Orion.get_info("path/where/you/want/to/search/text.txt", :ctime, :size, :ftype, :writable?)
 => #<OpenStruct ctime=2013-06-25 13:58:57 -0300, ftype="file", size=204, writable=true>
 ```
+
+### Using Orion with blocks 
+
 Optionally you can provide a block for an alternative sintax in all Orion methods, for example:
 
 ```ruby
