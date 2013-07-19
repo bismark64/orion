@@ -5,32 +5,64 @@ module Orion
     describe Orion do
       let(:orion_invalid_search) { Orion.search(invalid_path, ".rb") }
       let(:orion_invalid_delete) { Orion.delete(invalid_path, ".rb") }
-
-      def invalid_orion_get_info
-        Orion.get_info(path, :file?) do |result|
-          result.file?.should == File.file?(path)
-        end
-      end
+      let(:orion_invalid_info) { Orion.get_info(invalid_path, :size) }
 
       describe "#get_info" do
-        it "should raise an error if it isn't given any available methods as param" do
-          expect{
-            invalid_orion_get_info
-          }.to raise_error("The available methods for Orion.get_info are: atime, ctime, mtime, ftype, size")
+
+        shared_examples_for "any normal informant" do
+          it "should raise an error if it isn't given any available methods as param" do
+            expect{
+              invalid_orion_get_info
+            }.to raise_error("The available methods for Orion.get_info are: atime, ctime, mtime, ftype, size")
+          end
+        end
+        
+        it_should_behave_like "any normal finder" do
+          let(:search_method) { orion_invalid_info }
         end
 
-        it "should return the request value if just one method is provided (no block required)" do
-          Orion.get_info(path, :ftype).should == File.ftype(path)
+        context "without a block" do
+          it_should_behave_like "any normal informant" do
+            let(:invalid_orion_get_info) do
+              Orion.get_info(path, :file?)
+            end
+          end
+
+          it "should return the request value if just one method is provided" do
+            Orion.get_info(path, :ftype).should == File.ftype(path)
+          end
+
+          it "should accept variable params" do
+            info = Orion.get_info(path, :ftype, :ctime, :size)
+            info.should be_instance_of OpenStruct
+            info.ftype.should == File.ftype(path)
+            info.ctime.should == File.ctime(path)
+            info.size.should == File.size(path)
+          end
         end
 
-        it "should accept variable methods as params" do
-          Orion.get_info(path, :size, :ftype) do |result|
-            result.size.should == File.size(path)
-          end 
-          Orion.get_info(path, :size, :atime, :mtime, :ctime) do |result|
-            result.size.should == File.size(path)
-            result.atime.should == File.atime(path)
-            result.mtime.should == File.mtime(path)
+        context "with a block" do
+          it_should_behave_like "any normal informant" do
+            let(:invalid_orion_get_info) do
+              Orion.get_info(path, :file?) do |result|
+                result.file?.should == File.file?(path)
+              end
+            end
+          end
+
+          it "should accept just one param" do
+            Orion.get_info(path, :size) do |result|
+              result.class.should == File.size(path).class
+              result.should == File.size(path)
+            end 
+          end
+
+          it "should accept variable params" do
+            Orion.get_info(path, :size, :atime, :mtime, :ctime) do |result|
+              result.size.should == File.size(path)
+              result.atime.should == File.atime(path)
+              result.mtime.should == File.mtime(path)
+            end
           end
         end
       end
@@ -65,7 +97,7 @@ module Orion
           let(:search_method) { orion_invalid_delete }
         end
 
-        context "not given a block" do
+        context "without a block" do
           it "should return nil if doesn't find files" do
             create_files(".txt")
             orion_delete(rare_query).should be_nil
@@ -77,7 +109,7 @@ module Orion
           end
         end
 
-        context "given a block" do
+        context "with a block" do
           it "should return a response object" do
             create_files(".txt")
             Orion.delete(path, ".txt") do |response|
