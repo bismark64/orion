@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = Orion::VERSION
   spec.authors       = ["Bismark"]
   spec.email         = ["bismark64@gmail.com"]
-  spec.description   = "Orion allows you to search and delete files in your system."
-  spec.summary   = "Orion allows you to search and delete files in your system"
+  spec.description   = "Orion allows you to perform some file-related tasks in the filesystem."
+  spec.summary   = "Orion allows you to perform some file-related tasks in the filesystem"
   spec.homepage      = "https://github.com/bismark64/orion"
   spec.license       = "MIT"
 

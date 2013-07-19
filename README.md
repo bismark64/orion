@@ -1,8 +1,8 @@
 # Orion
 
-Orion is an tiny gem to search and delete files in the filesystem, using the Find and File Ruby modules.
+Orion is an tiny gem to perform some file-related tasks in the filesystem, using the Find and File Ruby modules.
 
-## Installation
+## Installation [![Gem Version](https://badge.fury.io/rb/orion.png)](http://badge.fury.io/rb/orion)
 
 Add this line to your application's Gemfile:
 
