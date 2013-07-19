@@ -109,7 +109,7 @@ Optionally you can provide a block for an alternative sintax in all Orion method
 
 ```ruby
 Orion.search "/home/username/ruby_projects/my_ruby_project", ".rb" do |results|
-  puts response.files if response.success 
+  puts results.files if results.success 
 end
 
 Orion.delete "path/where/you/want/to/search/in", ".rb" do |response|
