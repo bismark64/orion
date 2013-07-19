@@ -67,7 +67,7 @@ This object will be passed to the block for your use.
 ### Getting info from file
 
 ```ruby
-Orion.get_info("path/where/you/want/to/search/in", *methods)
+Orion.get_info("path/to/a/particular/file", *methods)
 ```
 You can call get_info with this core Ruby File methods:
 ```ruby
