@@ -1,7 +1,6 @@
 require 'find'
-require 'orion/result'
-# require 'boyer_moore/boyer_moore'
-include Orion::Result
+require "orion/orion_objects/array"
+require "orion/orion_objects/nil"
 
 module Orion
   class Search
@@ -16,7 +15,7 @@ module Orion
     end
 
     def with_response(query)
-      result(find(query))
+      find(query).to_orion
     end
 
     private
@@ -31,7 +30,5 @@ module Orion
       end
       results
     end
-
   end
-
 end

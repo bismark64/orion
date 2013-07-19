@@ -13,7 +13,7 @@ Gem::Specification.new do |spec|
   spec.homepage      = "https://github.com/bismark64/orion"
   spec.license       = "MIT"
 
-  spec.add_dependency('ruby-progressbar', '>= 1.1.1')
+  spec.add_dependency('i18n', '>= 0.6.4')
 
   spec.files         = Dir['lib/**/*.rb']
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
@@ -23,5 +23,4 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "rake"
   spec.add_development_dependency "rspec"
-  spec.add_development_dependency "factory_girl"
 end

@@ -1,6 +1,7 @@
 require 'rspec'
 require 'orion'
 require "support/string"
+require "orion/orion_support/i18n"
 
 module SpecHelper
   def create_files(extension)
@@ -18,6 +19,14 @@ module SpecHelper
     Orion::Search.new(path)
   end
 
+  def file_path
+    File.path(__FILE__)
+  end
+
+  def search_in_file
+    Orion::Search.new(file_path)
+  end
+
   def invalid_path
     "#{File.dirname(__FILE__)}/invalid"
   end
@@ -32,6 +41,10 @@ module SpecHelper
 
   def found_files(query=".rb")
     search.send(:find, query)
+  end
+
+  def files_in_file(query=".rb")
+    search_in_file.send(:find, query)
   end
 
   def orion_search(query=".rb")
