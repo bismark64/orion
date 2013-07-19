@@ -3,7 +3,7 @@ require "spec_helper"
 module Orion
   module RSpec
     describe Info do
-      let(:invalid_info) { Orion::Info.new(path).info(:zero?, :pipe?) }
+      let(:invalid_info) { Orion::Info.new(path).info(:files?, :pipe?) }
       let(:valid_info) { Orion::Info.new(path).info(:ctime, :size) }
       let(:one_info) { Orion::Info.new(path).info(:ctime) }
 
@@ -11,7 +11,7 @@ module Orion
         it "should raise an error if it isn't given any available methods as param" do
           expect{
             invalid_info
-          }.to raise_error("The available methods for Orion.get_info are: atime, ctime, mtime, ftype, size")
+          }.to raise_error(I18n.t("errors.get_info.no_correct_methods", methods: Info.available_methods.join(", ")))
         end
 
         it "should return the file value if just one method is provided" do

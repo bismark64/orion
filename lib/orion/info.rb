@@ -1,4 +1,5 @@
 require "orion/orion_objects/hash"
+require "orion/orion_support/i18n"
 
 module Orion
   class Info
@@ -7,9 +8,9 @@ module Orion
     end
 
     def info(*methods)
-      methods = available_methods & methods
+      methods = Info.available_methods & methods
       if methods.empty?
-        raise "The available methods for Orion.get_info are: #{available_methods.join(", ")}"
+        raise I18n.t("errors.get_info.no_correct_methods", methods: Info.available_methods.join(", "))
       else
         methods.one? ? single_method(methods.first) : find_info_from(methods).to_orion
       end
@@ -25,8 +26,10 @@ module Orion
       File.send(method, @path)   
     end    
 
-    def available_methods
-      [:atime, :ctime, :mtime, :ftype, :size]      
+    def self.available_methods
+      [:atime, :ctime, :mtime, :ftype, :size, :absolute_path, :basename, 
+        :directory?, :dirname, :executable?, :exists?, :extname, :file?,
+        :readable?, :socket?, :symlink?, :writable?, :zero?]      
     end
   end  
 end

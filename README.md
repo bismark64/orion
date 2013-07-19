@@ -24,7 +24,7 @@ Don't forget to require it in your project:
 
 For the time being Orion allows you to run just three methods:
 
-- Searching files:
+### Searching files:
 
     Orion.search "path/where/you/want/to/search/in", "query"
 
@@ -41,7 +41,7 @@ If Orion can't find the requested files the above hash will look like:
     
     #<OpenStruct success=false, count=0, files=[]> 
 
-- Deleting files
+### Deleting files
 
     Orion.delete "path/where/you/want/to/search/in", "query"
 
@@ -58,13 +58,30 @@ If you provide a block, then the delete method will return the same OpenStruct o
 
 This object will be passed to the block for your use.
 
-- Getting info from file
+### Getting info from file
     
     Orion.get_info("path/where/you/want/to/search/in", *methods)
 
 You can call get_info with this core Ruby File methods:
 
-    :atime, :ctime, :mtime, :ftype, :size
+    :atime
+    :ctime 
+    :mtim 
+    :ftype
+    :size 
+    :absolute_path 
+    :basename
+    :directory? 
+    :dirname
+    :executable? 
+    :exists? 
+    :extname 
+    :file?
+    :readable?
+    :socket?
+    :symlink? 
+    :writable?
+    :zero?
 
 So a get_info example would be:
 
@@ -73,8 +90,8 @@ So a get_info example would be:
 
 With more than just one method:
 
-    Orion.get_info("path/where/you/want/to/search/text.txt", :ctime, :size, :ftype)
-    => #<OpenStruct ctime=2013-06-25 13:58:57 -0300, ftype="file", size=204>
+    Orion.get_info("path/where/you/want/to/search/text.txt", :ctime, :size, :ftype, :writable?)
+    => #<OpenStruct ctime=2013-06-25 13:58:57 -0300, ftype="file", size=204, writable=true>
 
 Optionally you can provide a block for an alternative sintax in all Orion methods, for example:
 

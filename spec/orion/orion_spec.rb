@@ -13,10 +13,10 @@ module Orion
           it "should raise an error if it isn't given any available methods as param" do
             expect{
               invalid_orion_get_info
-            }.to raise_error("The available methods for Orion.get_info are: atime, ctime, mtime, ftype, size")
+            }.to raise_error(I18n.t("errors.get_info.no_correct_methods", methods: Info.available_methods.join(", ")))
           end
         end
-        
+
         it_should_behave_like "any normal finder" do
           let(:search_method) { orion_invalid_info }
         end
@@ -24,7 +24,7 @@ module Orion
         context "without a block" do
           it_should_behave_like "any normal informant" do
             let(:invalid_orion_get_info) do
-              Orion.get_info(path, :file?)
+              Orion.get_info(path, :files?)
             end
           end
 
@@ -44,8 +44,8 @@ module Orion
         context "with a block" do
           it_should_behave_like "any normal informant" do
             let(:invalid_orion_get_info) do
-              Orion.get_info(path, :file?) do |result|
-                result.file?.should == File.file?(path)
+              Orion.get_info(path, :files?) do |result|
+                result.files?.should == File.files?(path)
               end
             end
           end

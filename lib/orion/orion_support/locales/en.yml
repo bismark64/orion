@@ -1,0 +1,6 @@
+en:
+  errors:
+    delete:
+      not_file_provided: "You must to provide a file path, if you want to search inside a directory use Orion.delete(directory_path, query)"
+    get_info:
+      no_correct_methods: "The available methods for Orion.get_info are: %{methods}" 

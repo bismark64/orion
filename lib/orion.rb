@@ -1,3 +1,4 @@
+require "orion/orion_support/i18n"
 require "orion/version"
 require "orion/search"
 require "orion/delete"
@@ -17,7 +18,7 @@ module Orion
       Orion::Delete.delete(found_files)
     end
   end
-
+  
   def self.get_info(path, *methods)
     method_call = Orion::Info.new(path).info(*methods)
     block_given? ? yield(method_call) : method_call

@@ -1,6 +1,7 @@
 require 'rspec'
 require 'orion'
 require "support/string"
+require "orion/orion_support/i18n"
 
 module SpecHelper
   def create_files(extension)
