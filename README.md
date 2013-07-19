@@ -24,9 +24,14 @@ Don't forget to require it in your project:
 
 For the time being Orion allows you to run just three methods:
 
-1. Searching files:
+- Searching files:
 
     Orion.search "path/where/you/want/to/search/in", "query"
+
+Eg:
+
+    Orion.search "/home", "my_file_name" #will return all filenames which include my_file_name
+    Orion.search "/home/username/ruby_projects/my_ruby_project", ".rb" #will return all ruby files in my_ruby_project directory
 
 The result of that request is an OpenStruct object:
     
@@ -36,17 +41,28 @@ If Orion can't find the requested files the above hash will look like:
     
     #<OpenStruct success=false, count=0, files=[]> 
 
-2. Deleting files
+- Deleting files
 
     Orion.delete "path/where/you/want/to/search/in", "query"
 
+Eg:
+
+    Orion.delete "/home", "my_file_name" #will delete all filenames which include my_file_name
+    Orion.delete "/home/username/ruby_projects/my_ruby_project", ".rb" #will delete all ruby files in my_ruby_project directory
+
 This returns true whether Orion could delete the files and nil if not.
 
-3. Getting info from file
+If you provide a block, then the delete method will return the same OpenStruct object than search:
+
+    #<OpenStruct success= boolean, count=number_of_deleted_files, files= array_with_string_paths_representing_deleted_files>
+
+This object will be passed to the block for your use.
+
+- Getting info from file
     
     Orion.get_info("path/where/you/want/to/search/in", *methods)
 
-You can call get_info with this File methods:
+You can call get_info with this core Ruby File methods:
 
     :atime, :ctime, :mtime, :ftype, :size
 
@@ -62,8 +78,12 @@ With more than just one method:
 
 Optionally you can provide a block for an alternative sintax in all Orion methods, for example:
 
+    Orion.search "/home/username/ruby_projects/my_ruby_project", ".rb" do |results|
+      puts response.files if response.success 
+    end
+
     Orion.delete "path/where/you/want/to/search/in", ".rb" do |response|
-      puts response.files if response.success
+      puts response.files if response.success 
     end
 
     Orion.get_info("path/where/you/want/to/search/text.txt", :ctime, :size, :ftype) do |info|
@@ -72,6 +92,28 @@ Optionally you can provide a block for an alternative sintax in all Orion method
         puts info.size
       end
     end
+
+A practical example would be:
+    
+    require 'orion'
+
+    Orion.search "/home/username/code/", ".rb" do |results|
+      if results.success
+        results.files.each do |file|
+          puts file
+          Orion.get_info file, :atime, :ctime, :mtime, :ftype, :size do |info|
+            puts info.atime
+            puts info.ctime
+            puts info.mtime
+            puts info.ftype
+            puts info.size
+          end
+          puts ""
+        end
+      end
+    end
+
+This snippet searches all ruby files in "/home/username/code/" and for each one returns the path, and some information about that file.
 
 ## Contributing
 

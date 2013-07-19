@@ -5,11 +5,8 @@ require "orion/info"
 
 module Orion
   def self.search(root_path, query)
-    if block_given?
-      yield Orion::Search.new(root_path).with_response(query)
-    else
-      Orion::Search.new(root_path).with_response(query)
-    end
+    method_call = Orion::Search.new(root_path).with_response(query)
+    block_given? ? yield(method_call) : method_call
   end
 
   def self.delete(root_path, query)
@@ -22,10 +19,7 @@ module Orion
   end
 
   def self.get_info(path, *methods)
-    if block_given?
-      yield Orion::Info.new(path).info(*methods)
-    else
-      Orion::Info.new(path).info(*methods)
-    end
+    method_call = Orion::Info.new(path).info(*methods)
+    block_given? ? yield(method_call) : method_call
   end
 end
