@@ -9,7 +9,7 @@ module Orion
 
       describe "#find" do
         it_should_behave_like "any normal finder" do
-          let(:search_method) { invalid_search.send(:find, ".rb") }
+          let(:search_method) { invalid_search.search(name_hash)}
         end
 
         context "search in directory" do
@@ -18,11 +18,11 @@ module Orion
           end
 
           it "should return an empty array if doesn't find files" do
-            found_files("87asd8as89das35d4as7a?4sd.rb").should be_empty
+            found_files(name_hash rare_query).should be_empty
           end        
 
           it "should not return nil if doesn't find files" do
-            found_files("87asd8as89das35d4as7a?4sd.rb").should_not be_nil
+            found_files(name_hash rare_query).should_not be_nil
           end
 
           it "should return a non empty array if it finds files" do
@@ -49,11 +49,11 @@ module Orion
           end
 
           it "should return an empty array if doesn't find files" do
-            files_in_file("87asd8as89das35d4as7a?4sd.rb").should be_empty
+            files_in_file(name_hash rare_query).should be_empty
           end        
 
           it "should not return nil if doesn't find files" do
-            files_in_file("87asd8as89das35d4as7a?4sd.rb").should_not be_nil
+            files_in_file(name_hash rare_query).should_not be_nil
           end
         end
       end

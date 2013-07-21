@@ -11,6 +11,10 @@ module SpecHelper
     File.new("#{File.dirname(__FILE__)}/removemetoo#{extension}", "w")
   end
 
+  def name_hash(name=".rb")
+    {:name => name}
+  end
+
   def path
     File.dirname(__FILE__)
   end
@@ -39,19 +43,19 @@ module SpecHelper
     "87asd8as89das35d4as7a?4sd.rb"
   end
 
-  def found_files(query=".rb")
-    search.send(:find, query)
+  def found_files(query=name_hash)
+    search.search(query)
   end
 
-  def files_in_file(query=".rb")
-    search_in_file.send(:find, query)
+  def files_in_file(query=name_hash)
+    search_in_file.search(query)
   end
 
-  def orion_search(query=".rb")
+  def orion_search(query=name_hash)
     Orion.search(path, query)
   end
 
-  def orion_delete(query=".txt")
+  def orion_delete(query={:name => ".txt"})
     Orion.delete(path, query)
   end
 end

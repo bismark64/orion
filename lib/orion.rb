@@ -5,13 +5,13 @@ require "orion/delete"
 require "orion/info"
 
 module Orion
-  def self.search(root_path, query)
-    method_call = Orion::Search.new(root_path).with_response(query)
+  def self.search(root_path, query_hash)
+    method_call = Orion::Search.new(root_path).search(query_hash).to_orion
     block_given? ? yield(method_call) : method_call
   end
 
-  def self.delete(root_path, query)
-    found_files = Orion::Search.new(root_path).search(query)
+  def self.delete(root_path, query_hash)
+    found_files = Orion::Search.new(root_path).search(query_hash)
     if block_given?
       yield Orion::Delete.with_response(found_files)
     else
