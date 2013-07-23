@@ -44,31 +44,33 @@ You can specify conditions or criteria in the Orion search method, via the condi
 Orion only accepts some conditions as valid, so be aware of only use those included in this list:
 
 ```ruby
-:name
-:atime
-:ctime 
-:mtim 
-:ftype
-:size 
-:absolute_path 
-:basename
-:directory? 
-:dirname
-:executable? 
-:exists? 
-:extname 
-:file?
-:readable?
-:socket?
-:symlink? 
-:writable?
-:zero?
+#Condition            Allowed type  
+:name                 #string
+:atime                #time
+:ctime                #time
+:mtime                #time
+:ftype                #ftype
+:size                 #integer (representing bytes)
+:absolute_path        #string
+:basename             #string
+:directory?           #boolean
+:dirname              #string
+:executable?          #boolean
+:exists?              #boolean
+:extname              #string
+:file?                #boolean
+:readable?            #boolean
+:socket?              #boolean
+:symlink?             #boolean
+:writable?            #boolean
+:zero?                #boolean
 ```
 
 E.g:
 ```ruby
 Orion.search "/home", name: "my_file_name" #will return all files which include my_file_name in /home
 Orion.search "~/ruby_projects/my_ruby_project", name: ".rb", size: '> 9999' #will return all ruby files in my_ruby_project directory which size is larger than 9999 bytes
+Orion.search "/var/www", ftype: "socket", ctime: "> Time.now - 2.weeks" #will return all sockets in /var/www created since two weeks ago.
 ```
 The result of those requests are OpenStruct objects:
     
@@ -81,13 +83,13 @@ If Orion can't find the requested files the above object will look like:
 ### Deleting files
 
 ```ruby
-Orion.delete "path/where/you/want/to/search/in", "query"
+Orion.delete "path/where/you/want/to/search/in", conditions
 ```
 Eg:
 
 ```ruby
-Orion.delete "/home", "my_file_name" #will delete all files which include my_file_name in /home
-Orion.delete "/home/username/ruby_projects/my_ruby_project", ".rb" #will delete all ruby files in my_ruby_project directory
+Orion.delete "/home", name: "my_file_name" #will delete all files which include my_file_name in /home
+Orion.delete "~/ruby_projects/my_ruby_project", name: ".rb", size: '> 9999' #will delete all ruby files in my_ruby_project directory which size is larger than 9999 bytes
 ```
 This returns true whether Orion could delete the files and nil if not.
 
@@ -102,27 +104,8 @@ This object will be passed to the block for your use.
 ```ruby
 Orion.get_info("path/to/a/particular/file", *methods)
 ```
-You can call `get_info` with this core Ruby `File` methods:
-```ruby
-:atime
-:ctime 
-:mtim 
-:ftype
-:size 
-:absolute_path 
-:basename
-:directory? 
-:dirname
-:executable? 
-:exists? 
-:extname 
-:file?
-:readable?
-:socket?
-:symlink? 
-:writable?
-:zero?
-```
+The methods may be all of the `Orion.search` conditions, except :name
+
 So a `get_info` example would be:
 
 ```ruby
@@ -141,11 +124,11 @@ Orion.get_info("path/where/you/want/to/search/text.txt", :ctime, :size, :ftype, 
 Optionally you can provide a block for an alternative sintax in all Orion methods, for example:
 
 ```ruby
-Orion.search "/home/username/ruby_projects/my_ruby_project", ".rb" do |results|
+Orion.search "/home/username/ruby_projects/my_ruby_project", name: ".rb" do |results|
   puts results.files if results.success 
 end
 
-Orion.delete "path/where/you/want/to/search/in", ".rb" do |response|
+Orion.delete "path/where/you/want/to/search/in", name: ".rb" do |response|
   puts response.files if response.success 
 end
 
@@ -160,7 +143,7 @@ A practical example would be:
 ```ruby   
 require 'orion'
 
-Orion.search "/home/username/code/", ".rb" do |results|
+Orion.search "~/username/code/", ctime: "< Time.now - 3.weeks", file?: true do |results|
   if results.success
     results.files.each do |file|
       puts file
@@ -176,7 +159,7 @@ Orion.search "/home/username/code/", ".rb" do |results|
   end
 end
 ```
-This snippet searches all ruby files in "/home/username/code/" and for each one returns the path, and some information about that file.
+This snippet searches files in "~/username/code/" created until 3 weeks ago and for each one returns the path, and some information about that file.
 
 ## Contributing
 
