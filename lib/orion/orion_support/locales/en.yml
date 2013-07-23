@@ -1,5 +1,7 @@
 en:
   errors:
+    search:
+      not_conditions_provided: "You must to provide at least one condition to search with Orion"
     delete:
       not_file_provided: "You must to provide a file path, if you want to search inside a directory use Orion.delete(directory_path, query)"
     get_info:

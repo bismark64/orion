@@ -1,5 +1,4 @@
 require 'orion/orion_support/find/find'
-require "orion/orion_objects/array"
 require "orion/orion_objects/nil"
 
 module Orion

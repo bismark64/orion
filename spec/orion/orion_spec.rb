@@ -72,15 +72,15 @@ module Orion
           let(:search_method) { orion_invalid_search }
         end
 
-        it "should return a hash with trivial values if it couldn't find files" do
+        it "should return an object with trivial values if it couldn't find files" do
           response = orion_search(name_hash rare_query)
           response.success.should be_false
           response.count.should be_zero
           response.files.should be_empty
         end
 
-        it "should return a valuable hash if could find files" do
-          response = orion_search
+        it "should return a valuable object if could find files" do
+          response = orion_search(size: "> 58")
           response.success.should be_true
           response.count.should_not be_zero
           response.files.should_not be_empty
@@ -88,6 +88,7 @@ module Orion
           response.files.each do |file|
             file.should be_instance_of String
             file.should be_a_valid_file
+            File.size(file).should > 58
           end
         end
       end

@@ -1,99 +1,72 @@
-#Source from:
-#https://github.com/ruby/ruby/blob/trunk/lib/find.rb?source=cc
-#
-# find.rb: the Find module for processing all files under a given directory.
-#
+# Original from:
+#   https://github.com/ruby/ruby/blob/trunk/lib/find.rb?source=cc
+# Modified to fit Orion purposes
 
-#
-# The +Find+ module supports the top-down traversal of a set of file paths.
-#
-# For example, to total the size of all files under your home directory,
-# ignoring anything in a "dot" directory (e.g. $HOME/.ssh):
-#
-#   require 'find'
-#
-#   total_size = 0
-#
-#   Find.find(ENV["HOME"]) do |path|
-#     if FileTest.directory?(path)
-#       if File.basename(path)[0] == ?.
-#         Find.prune       # Don't look any further into this directory.
-#       else
-#         next
-#       end
-#     else
-#       total_size += FileTest.size(path)
-#     end
-#   end
-#
-module Find
+require "orion/orion_support/i18n"
+require "orion/orion_objects/fixnum"
 
-  #
-  # Calls the associated block with the name of every file and directory listed
-  # as arguments, then recursively on their subdirectories, and so on.
-  #
-  # Returns an enumerator if no block is given.
-  #
-  # See the +Find+ module documentation for an example.
-  #
-  # Return files based in the conditions hash. E.g {:name => "my_file", :size => ">258", :ftype => "file"}
-  def find(*paths, conditions) # :yield: path
-    results = []
-    condition_string = condition_statement(conditions)
+module Orion
+  module Find
+    def find(*paths, conditions) # :yield: path
+      raise I18n.t("errors.search.not_conditions_provided") if conditions.empty?
+      condition_string = condition_statement(validate(conditions))
+      results = []
 
-    paths.collect!{|d| raise Errno::ENOENT unless File.exist?(d); d.dup}
-    while file = paths.shift
-      catch(:prune) do
-        results << file.dup.taint if eval(condition_string)
-        begin
-          s = File.lstat(file)
-        rescue Errno::ENOENT, Errno::EACCES, Errno::ENOTDIR, Errno::ELOOP, Errno::ENAMETOOLONG
-          next
-        end
-        if s.directory? then
+      paths.collect!{|d| raise Errno::ENOENT unless File.exist?(d); d.dup}
+      while file = paths.shift
+        catch(:prune) do
+          results << file.dup.taint if eval(condition_string)
           begin
-            fs = Dir.entries(file)
+            s = File.lstat(file)
           rescue Errno::ENOENT, Errno::EACCES, Errno::ENOTDIR, Errno::ELOOP, Errno::ENAMETOOLONG
             next
           end
-          fs.sort!
-          fs.reverse_each {|f|
-            next if f == "." or f == ".."
-            f = File.join(file, f)
-            paths.unshift f.untaint
-          }
+          if s.directory? then
+            begin
+              fs = Dir.entries(file)
+            rescue Errno::ENOENT, Errno::EACCES, Errno::ENOTDIR, Errno::ELOOP, Errno::ENAMETOOLONG
+              next
+            end
+            fs.sort!
+            fs.reverse_each {|f|
+              next if f == "." or f == ".."
+              f = File.join(file, f)
+              paths.unshift f.untaint
+            }
+          end
         end
       end
+      results
     end
-    results
-  end
 
-  # Creates a conditional statement with the given conditions
-  def self.condition_statement(conditions)
-    comparative_conditions = conditions.reject{|k,v| (v =~ /(>)|(<)/).nil? }
-    equality_conditions = Hash.diff(conditions, comparative_conditions) 
-
-    condition_string = conditions.has_key?(:name) ? "file.include?(conditions[:name]) &&" : ""
-    equality_conditions.each do |k, v|
-      condition_string << " File.send(:#{k}, file) == conditions[:#{k}] &&" unless k == :name
+    def self.validate(conditions)
+      valid_conditions = [:name, :atime, :ctime, :mtime, :ftype, :size, :absolute_path, :basename, :directory?, :dirname, :executable?, :exists?, :extname, :file?, :readable?, :socket?, :symlink?, :writable?, :zero?]
+      invalid_cond = ((valid_conditions+conditions.keys)-(valid_conditions&conditions.keys))-(valid_conditions-(valid_conditions&conditions.keys))
+      invalid_cond.empty? ? conditions : raise(NoMethodError)
     end
-    comparative_conditions.each do |k, v|
-      condition_string << " File.send(:#{k}, file) #{conditions[k]} &&"
+
+    def self.arrange_conditions(conditions)
+      @comparative_conditions = conditions.select{|k,v| v =~ /(>)|(<)/ } # size: '> 999'
+      @equality_conditions = Hash.diff(conditions, @comparative_conditions) # name: '.rb'
     end
-    condition_string << " true"
-  end
 
-  #
-  # Skips the current file or directory, restarting the loop with the next
-  # entry. If the current file is a directory, that directory will not be
-  # recursively entered. Meaningful only within the block associated with
-  # Find::find.
-  #
-  # See the +Find+ module documentation for an example.
-  #
-  def prune
-    throw :prune
-  end
+    # Creates a conditional statement string with the given conditions
+    def self.condition_statement(conditions)
+      arrange_conditions(conditions)
+      conditions_array = conditions.has_key?(:name) ? ["file.include?(conditions[:name])"] : []
+      @equality_conditions.each do |k, v|
+        conditions_array << "File.send(:#{k}, file) == conditions[:#{k}]" unless k == :name
+      end
+      @comparative_conditions.each do |k, v|
+        conditions_array << "File.send(:#{k}, file) #{conditions[k]}"
+      end
+      conditions_array.join(" && ")
+    end
 
-  module_function :find, :prune
+    def prune
+      throw :prune
+    end
+
+    module_function :find, :prune
+  end
 end

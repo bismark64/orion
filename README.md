@@ -26,16 +26,49 @@ require 'orion'
 ```
 ## Usage
 
-For the time being Orion allows you to run just three methods:
+Using Orion you can perform this actions:
 
-### Searching files:
+### Searching files
+
 ```ruby
-Orion.search "path/where/you/want/to/search/in", "query"
+Orion.search "path/where/you/want/to/search/in", conditions
 ```
-Eg:
+
+##### Paths
+
+You can use both relative and absolute paths as the root path where Orion will search in.
+
+##### Conditions
+
+You can specify conditions or criteria in the Orion search method, via the conditions hash. 
+Orion only accepts some conditions as valid, so be aware of only use those included in this list:
+
 ```ruby
-Orion.search "/home", "my_file_name" #will return all files which include my_file_name in /home
-Orion.search "/home/username/ruby_projects/my_ruby_project", ".rb" #will return all ruby files in my_ruby_project directory
+:name
+:atime
+:ctime 
+:mtim 
+:ftype
+:size 
+:absolute_path 
+:basename
+:directory? 
+:dirname
+:executable? 
+:exists? 
+:extname 
+:file?
+:readable?
+:socket?
+:symlink? 
+:writable?
+:zero?
+```
+
+E.g:
+```ruby
+Orion.search "/home", name: "my_file_name" #will return all files which include my_file_name in /home
+Orion.search "~/ruby_projects/my_ruby_project", name: ".rb", size: '> 9999' #will return all ruby files in my_ruby_project directory which size is larger than 9999 bytes
 ```
 The result of those requests are OpenStruct objects:
     
